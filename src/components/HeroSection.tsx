@@ -110,10 +110,7 @@ const HeroSection = () => {
           </div>
 
           <p className="text-base md:text-lg text-purple-800/80 leading-relaxed max-w-xl mx-auto">
-            Ngày hôm nay, ta đẹp ta tài đẳng cấp đến mức, xin chúc một cuốn
-            Phúc lốc như một cuốn sách như ý thì đẹp ơi là bành phục. Tất cả
-            những gì tốt đẹp nhất trên đời đều dành cho nữ giới dễ thương dành
-            cho các bạn. Yêu và thương!
+            Ngày hôm nay là dịp tôn vinh vẻ đẹp và tài năng của phụ nữ Việt Nam. Chúc các bạn nữ lớp A5 luôn tỏa sáng, tự tin và hạnh phúc trên con đường cuộc sống. Mong rằng những điều tốt đẹp sẽ đến với các bạn. Chúc mừng ngày 20/10!
           </p>
         </div>
       </div>
