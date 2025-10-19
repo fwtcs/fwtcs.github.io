@@ -5,13 +5,58 @@ import type { Database } from './types';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-// Import the supabase client like this:
-// import { supabase } from "@/integrations/supabase/client";
+/**
+ * Lazy-init the supabase client so missing build-time env vars don't throw
+ * during module import (which crashes the whole app). The real client will
+ * be created on first use. If env vars are missing, an explicit error is
+ * thrown when the client is actually accessed.
+ *
+ * This approach keeps imports safe for environments where the site is served
+ * statically without the VITE_* values baked into the build (e.g. accidental
+ * GitHub Pages build without secrets).
+ */
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-  auth: {
-    storage: localStorage,
-    persistSession: true,
-    autoRefreshToken: true,
+function createClientInstance() {
+  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+    throw new Error(
+      'Supabase is not configured. Build-time environment variables VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY are required.'
+    );
   }
-});
+
+  return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+    auth: {
+      storage: localStorage,
+      persistSession: true,
+      autoRefreshToken: true,
+    },
+  });
+}
+
+type SupabaseClient = ReturnType<typeof createClientInstance>;
+
+/**
+ * Proxy target that will lazily create the real client on first access.
+ * The proxy delegates property reads and method calls to the real client.
+ */
+const proxyTarget = function () {};
+const handler: ProxyHandler<any> = {
+  get(target, prop, receiver) {
+    if (!target.__client) {
+      target.__client = createClientInstance();
+    }
+    const client = target.__client;
+    const value = client[prop as keyof typeof client];
+    if (typeof value === 'function') {
+      return (value as Function).bind(client);
+    }
+    return value;
+  },
+  apply(target, thisArg, argArray) {
+    if (!target.__client) {
+      target.__client = createClientInstance();
+    }
+    return target.__client.apply(thisArg, argArray);
+  },
+};
+
+export const supabase = new Proxy(proxyTarget, handler) as unknown as SupabaseClient;
