@@ -65,7 +65,7 @@ const Index = () => {
           ) : (
             <div className="flex justify-center">
               <Button onClick={() => navigate('/auth')} variant="outline">
-                Login (idk why blou made this)
+                login
               </Button>
             </div>
           )}
