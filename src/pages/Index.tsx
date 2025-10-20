@@ -45,7 +45,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-6">
             <p className="text-muted-foreground">
-              © 2025 dd.std - Được tạo để chúc mừng ngày 20/10
+              © 2025 - Được tạo để chúc mừng ngày 20/10
             </p>
           </div>
           
